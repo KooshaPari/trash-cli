@@ -1,11 +1,12 @@
 use std::env;
 use std::ffi::CString;
+use std::collections::HashMap;
 use std::fs::{self, read_dir, read_to_string};
 use std::io::{self, Write};
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 
-type EnvVarMap = Vec<(String, String)>;
+type EnvVarMap = HashMap<String, String>;
 
 fn main() {
     let mut stderr = io::stderr();
@@ -23,11 +24,22 @@ fn main() {
 
     let pattern = args[1].as_str();
     let environ = env::vars().collect::<EnvVarMap>();
+    let mut had_error = false;
+    let stderr = io::stderr();
+    let mut stderr = stderr.lock();
     for item in list_trashinfo_matches(collect_trash_dirs(&environ, uid as u32), pattern) {
         match item {
             Ok((_original_location, trashinfo_path, backup_path)) => {
-                let _ = rm_file_if_exists(&backup_path);
-                let _ = rm_file2(&trashinfo_path);
+                if let Err(err) = rm_file_if_exists(&backup_path) {
+                    had_error = true;
+                    writeln!(stderr, "trash-rm: failed to remove backup file {}: {}", backup_path.display(), err)
+                        .expect("unable to write removal error to stderr");
+                }
+                if let Err(err) = rm_file2(&trashinfo_path) {
+                    had_error = true;
+                    writeln!(stderr, "trash-rm: failed to remove trashinfo {}: {}", trashinfo_path.display(), err)
+                        .expect("unable to write removal error to stderr");
+                }
             }
             Err(info_path) => {
                 writeln!(
@@ -39,30 +51,29 @@ fn main() {
             }
         }
     }
+
+    if had_error {
+        std::process::exit(1);
+    }
 }
 
 fn collect_trash_dirs(environ: &EnvVarMap, uid: u32) -> Vec<(PathBuf, String)> {
-    let mut xdg_data_home: Option<String> = None;
-    let mut home_dir: Option<String> = None;
-    let mut volumes_env: Option<String> = None;
-    for (key, value) in environ {
-        if key == "XDG_DATA_HOME" {
-            xdg_data_home = Some(value.clone());
-        }
-        if key == "HOME" {
-            home_dir = Some(value.clone());
-        }
-        if key == "TRASH_VOLUMES" {
-            volumes_env = Some(value.clone());
-        }
-    }
+    let xdg_data_home = environ.get("XDG_DATA_HOME").cloned();
+    let home_dir = environ.get("HOME").cloned();
+    let volumes_env = environ.get("TRASH_VOLUMES").cloned();
 
     let mut trash_dirs = Vec::new();
 
     if let Some(xdg) = xdg_data_home {
-        trash_dirs.push((PathBuf::from(format!("{xdg}/Trash")), "/".to_string()));
+        let mut xdg_trash = PathBuf::from(xdg);
+        xdg_trash.push("Trash");
+        trash_dirs.push((xdg_trash, "/".to_string()));
     } else if let Some(home) = home_dir {
-        trash_dirs.push((PathBuf::from(format!("{home}/.local/share/Trash")), "/".to_string()));
+        let mut default_trash = PathBuf::from(home);
+        default_trash.push(".local");
+        default_trash.push("share");
+        default_trash.push("Trash");
+        trash_dirs.push((default_trash, "/".to_string()));
     }
 
     let volumes = if let Some(volumes) = volumes_env {
