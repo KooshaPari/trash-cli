@@ -4,8 +4,10 @@ use std::process::{Command, ExitStatus};
 
 const PYTHON_BOOTSTRAP: &str = "import os, sys\nfrom trashcli.put.main import main as main\n\nsys.argv[0] = os.environ.get('TRASH_PUT_WRAPPER_NAME', 'trash-put')\nraise SystemExit(main())";
 
+const PYTHON_EXECUTABLES: [&str; 2] = ["python3", "python"];
+
 fn find_interpreter() -> Option<&'static str> {
-    ["python3", "python"].iter().find(|candidate| {
+    PYTHON_EXECUTABLES.iter().find(|candidate| {
         Command::new(candidate)
             .arg("-c")
             .arg("pass")

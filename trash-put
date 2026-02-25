@@ -15,15 +15,17 @@ elif command -v cargo >/dev/null 2>&1; then
 fi
 
 if [ -z "$_RUST_BIN" ]; then
-  if command -v python3 >/dev/null 2>&1; then
-    TRASH_PUT_WRAPPER_NAME="$_WRAPPER_NAME" \
-      exec python3 -c "import os, sys; sys.argv[0] = os.environ.get('TRASH_PUT_WRAPPER_NAME', 'trash-put'); from trashcli.put.main import main as main; raise SystemExit(main())" "$@"
-  fi
+  PYTHON_BOOTSTRAP='import os, sys\n\
+sys.argv[0] = os.environ.get("TRASH_PUT_WRAPPER_NAME", "trash-put")\n\
+from trashcli.put.main import main as python_main\n\
+raise SystemExit(python_main())'
+  TRASH_PUT_WRAPPER_NAME="$_WRAPPER_NAME"
 
-  if command -v python >/dev/null 2>&1; then
-    TRASH_PUT_WRAPPER_NAME="$_WRAPPER_NAME" \
-      exec python -c "import os, sys; sys.argv[0] = os.environ.get('TRASH_PUT_WRAPPER_NAME', 'trash-put'); from trashcli.put.main import main as main; raise SystemExit(main())" "$@"
-  fi
+  for candidate in python3 python; do
+    if command -v "$candidate" >/dev/null 2>&1; then
+      exec "$candidate" -c "$PYTHON_BOOTSTRAP" "$@"
+    fi
+  done
 
   echo "trash-put: no Python interpreter found" >&2
   exit 1
