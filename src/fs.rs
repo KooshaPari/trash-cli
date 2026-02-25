@@ -113,7 +113,7 @@ impl FileSystem for RealFileSystem {
 
 /// Convenience helper for command implementations that repeatedly need the first
 /// file-system entry when iterating directories.
-pub fn first_entry_name(entries: &[DirEntry]) -> Option<String> {
+pub fn first_entry_file_name(entries: &[DirEntry]) -> Option<String> {
     entries.first().and_then(|entry| {
         entry
             .file_name()

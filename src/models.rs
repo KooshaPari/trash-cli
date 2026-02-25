@@ -159,10 +159,3 @@ impl ExitStatusLike {
         }
     }
 }
-
-#[derive(Debug, Clone)]
-pub struct CommandResult {
-    pub command: CommandKind,
-    pub status: ExitStatusLike,
-    pub output: Vec<String>,
-}

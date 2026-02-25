@@ -1,4 +1,4 @@
-use std::{fmt, io, path::PathBuf};
+use std::{io, path::PathBuf};
 
 /// Shared error type used by all Rust command crates during migration.
 #[derive(thiserror::Error, Debug)]
@@ -47,12 +47,6 @@ impl CoreError {
 
     pub fn io(path: impl Into<PathBuf>, error: io::Error) -> Self {
         Self::Io(path.into(), error)
-    }
-}
-
-impl From<CoreError> for fmt::Error {
-    fn from(_: CoreError) -> Self {
-        fmt::Error
     }
 }
 
