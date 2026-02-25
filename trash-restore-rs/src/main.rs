@@ -2,6 +2,8 @@ use std::env;
 use std::path::{Path, PathBuf};
 use std::process::{exit, Command, Stdio};
 
+const PYTHON_EXECUTABLES: [&str; 2] = ["python3", "python"];
+
 fn main() {
     let python = find_python_interpreter();
     let mut command = Command::new(python);
@@ -37,20 +39,11 @@ fn find_python_interpreter() -> PathBuf {
         return Path::new(&py).to_path_buf();
     }
 
-    if let Some(py) = which("python3").or_else(|| which("python")) {
-        return py;
+    for candidate in PYTHON_EXECUTABLES.iter() {
+        if let Ok(py) = which::which(candidate) {
+            return py;
+        }
     }
 
     Path::new("python").to_path_buf()
-}
-
-fn which(bin: &str) -> Option<PathBuf> {
-    let path_var = env::var_os("PATH")?;
-    for path in env::split_paths(&path_var) {
-        let candidate = path.join(bin);
-        if candidate.is_file() {
-            return Some(candidate);
-        }
-    }
-    None
 }
