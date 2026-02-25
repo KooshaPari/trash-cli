@@ -5,6 +5,9 @@ import os
 import subprocess
 import sys
 
+def _path_is_executable(path):
+    return bool(path) and os.path.isfile(path) and os.access(path, os.X_OK)
+
 
 def main():
     root = os.path.dirname(os.path.abspath(__file__))
@@ -17,7 +20,7 @@ def main():
     ]
 
     for candidate in candidates:
-        if candidate and os.path.isfile(candidate) and os.access(candidate, os.X_OK):
+        if _path_is_executable(candidate):
             env = os.environ.copy()
             env['TRASH_EMPTY_PYTHON_EXECUTABLE'] = sys.executable
             sys.exit(subprocess.call([candidate] + sys.argv[1:], env=env))

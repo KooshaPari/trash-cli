@@ -2,7 +2,14 @@ use std::env;
 use std::path::Path;
 use std::process::{Command, ExitStatus};
 
-const PYTHON_BOOTSTRAP: &str = "import os, sys\nfrom trashcli.empty.main import main as main\n\nsys.argv[0] = os.environ.get('TRASH_EMPTY_WRAPPER_NAME', 'trash-empty')\nraise SystemExit(main())";
+const PYTHON_BOOTSTRAP: &str = r#"import os
+import sys
+from trashcli.empty.main import main as main
+
+sys.argv[0] = os.environ.get('TRASH_EMPTY_WRAPPER_NAME', 'trash-empty')
+raise SystemExit(main())
+"#;
+const PYTHON_EXECUTABLES: [&str; 2] = ["python3", "python"];
 
 fn find_interpreter() -> Option<String> {
     if let Ok(explicit) = env::var("TRASH_EMPTY_PYTHON_EXECUTABLE") {
@@ -11,7 +18,7 @@ fn find_interpreter() -> Option<String> {
         }
     }
 
-    ["python3", "python"].iter().find_map(|candidate| {
+    PYTHON_EXECUTABLES.iter().find_map(|candidate| {
         if is_python_interpreter(candidate) {
             Some((*candidate).to_string())
         } else {
