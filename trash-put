@@ -1,5 +1,32 @@
-#!/usr/bin/env python
-from __future__ import absolute_import
-import sys
-from trashcli.put.main import main as main
-sys.exit(main())
+#!/usr/bin/env sh
+set -eu
+
+_ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
+_RUST_BIN_DIR="$_ROOT_DIR/trash-put-rs/target"
+_RUST_BIN=""
+_WRAPPER_NAME="$(basename "$0")"
+
+if [ -x "$_RUST_BIN_DIR/release/trash-put" ]; then
+  _RUST_BIN="$_RUST_BIN_DIR/release/trash-put"
+elif [ -x "$_RUST_BIN_DIR/debug/trash-put" ]; then
+  _RUST_BIN="$_RUST_BIN_DIR/debug/trash-put"
+elif command -v cargo >/dev/null 2>&1; then
+  exec cargo run --manifest-path "$_ROOT_DIR/trash-put-rs/Cargo.toml" -- "$@"
+fi
+
+if [ -z "$_RUST_BIN" ]; then
+  if command -v python3 >/dev/null 2>&1; then
+    TRASH_PUT_WRAPPER_NAME="$_WRAPPER_NAME" \
+      exec python3 -c "import os, sys; sys.argv[0] = os.environ.get('TRASH_PUT_WRAPPER_NAME', 'trash-put'); from trashcli.put.main import main as main; raise SystemExit(main())" "$@"
+  fi
+
+  if command -v python >/dev/null 2>&1; then
+    TRASH_PUT_WRAPPER_NAME="$_WRAPPER_NAME" \
+      exec python -c "import os, sys; sys.argv[0] = os.environ.get('TRASH_PUT_WRAPPER_NAME', 'trash-put'); from trashcli.put.main import main as main; raise SystemExit(main())" "$@"
+  fi
+
+  echo "trash-put: no Python interpreter found" >&2
+  exit 1
+fi
+
+exec "$_RUST_BIN" "$@"
