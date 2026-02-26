@@ -17,3 +17,10 @@
 /ssh-config
 /.idea/
 /.tox/
+
+.env
+
+# Phenotype Config
+.phenotype/
+config.db
+*.key

@@ -1,0 +1,8 @@
+[phenotype]
+repo = "trash-cli"
+
+[flags]
+# Default feature flags - all disabled initially
+
+[config]
+# Default config values
