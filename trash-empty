@@ -1,5 +1,34 @@
 #!/usr/bin/env python
 from __future__ import absolute_import
+
+import os
+import subprocess
 import sys
-from trashcli.empty.main import main as main
-sys.exit(main())
+
+def _path_is_executable(path):
+    return bool(path) and os.path.isfile(path) and os.access(path, os.X_OK)
+
+
+def main():
+    root = os.path.dirname(os.path.abspath(__file__))
+    candidates = [
+        os.environ.get('TRASH_EMPTY_BINARY'),
+        os.path.join(root, 'target', 'release', 'trash-empty'),
+        os.path.join(root, 'target', 'debug', 'trash-empty'),
+        os.path.join(root, 'trash-empty-rs', 'target', 'release', 'trash-empty'),
+        os.path.join(root, 'trash-empty-rs', 'target', 'debug', 'trash-empty'),
+    ]
+
+    for candidate in candidates:
+        if _path_is_executable(candidate):
+            env = os.environ.copy()
+            env['TRASH_EMPTY_PYTHON_EXECUTABLE'] = sys.executable
+            sys.exit(subprocess.call([candidate] + sys.argv[1:], env=env))
+
+    # Fallback to existing Python implementation when Rust binary is not built.
+    from trashcli.empty.main import main as py_main
+    sys.exit(py_main())
+
+
+if __name__ == '__main__':
+    main()
