@@ -1,5 +1,35 @@
 #!/usr/bin/env python
 from __future__ import absolute_import
+import os
+import subprocess
 import sys
-from trashcli.restore.main import main as main
-sys.exit(main())
+
+from trashcli.restore.main import main as python_main
+
+
+def _path_is_executable(path):
+    return bool(path) and os.path.isfile(path) and os.access(path, os.X_OK)
+
+
+def main():
+    root = os.path.realpath(os.path.dirname(__file__))
+    candidates = [
+        os.environ.get("TRASH_RESTORE_BINARY"),
+        os.path.join(root, "target", "release", "trash-restore"),
+        os.path.join(root, "target", "debug", "trash-restore"),
+        os.path.join(root, "trash-restore-rs", "target", "release", "trash-restore"),
+        os.path.join(root, "trash-restore-rs", "target", "debug", "trash-restore"),
+    ]
+
+    for candidate in candidates:
+        if _path_is_executable(candidate):
+            env = os.environ.copy()
+            env["TRASH_RESTORE_PYTHON"] = sys.executable
+            code = subprocess.call([candidate] + sys.argv[1:], env=env)
+            sys.exit(code)
+
+    sys.exit(python_main())
+
+
+if __name__ == "__main__":
+    main()
