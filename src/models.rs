@@ -102,7 +102,12 @@ pub struct TrashedItem {
 }
 
 impl TrashedItem {
-    pub fn new(original_path: PathBuf, trashed_path: PathBuf, info_path: PathBuf, trash_dir: PathBuf) -> Self {
+    pub fn new(
+        original_path: PathBuf,
+        trashed_path: PathBuf,
+        info_path: PathBuf,
+        trash_dir: PathBuf,
+    ) -> Self {
         Self {
             original_path,
             trashed_path,

@@ -29,7 +29,11 @@ pub fn parse_trash_datetime(value: &str) -> Option<DateTime<Utc>> {
     NaiveDateTime::parse_from_str(value, TRASHINFO_TIME_FORMAT)
         .ok()
         .map(|naive| Utc.from_utc_datetime(&naive))
-        .or_else(|| DateTime::parse_from_rfc3339(value).ok().map(|dt| dt.with_timezone(&Utc)))
+        .or_else(|| {
+            DateTime::parse_from_rfc3339(value)
+                .ok()
+                .map(|dt| dt.with_timezone(&Utc))
+        })
 }
 
 /// Serializes a UTC datetime into the repository-standard trash format.
