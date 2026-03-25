@@ -37,6 +37,8 @@ jobs:
     - name: Set up 3.5 Python, ${{ matrix.python_version }}
       if: ${{ matrix.python_version == '3.5' }}
       uses: actions/setup-python@v5
+        with:
+          cache: 'pip'
       env:
         # Workaround copied from
         # https://github.com/ytdl-org/youtube-dl/commit/a08f2b7e4567cdc50c0614ee0a4ffdff49b8b6e6
@@ -68,6 +70,8 @@ jobs:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python_version }}
       uses: actions/setup-python@v5
+        with:
+          cache: 'pip'
       with:
         python-version: ${{ matrix.python_version }}
     - name: Test sdist
