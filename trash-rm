@@ -1,5 +1,16 @@
-#!/usr/bin/env python
-from __future__ import absolute_import
-import sys
-from trashcli.rm.main import main as main
-sys.exit(main())
+#!/usr/bin/env sh
+set -eu
+
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+BINARY_PATH="$SCRIPT_DIR/rust-trash-rm/target/release/trash-rm-rs"
+MANIFEST_PATH="$SCRIPT_DIR/rust-trash-rm/Cargo.toml"
+
+if [ -x "$BINARY_PATH" ]; then
+  exec "$BINARY_PATH" "$@"
+fi
+
+if command -v cargo >/dev/null 2>&1; then
+  exec cargo run --manifest-path "$MANIFEST_PATH" --release --quiet -- "$@"
+fi
+
+exec python3 -c 'from trashcli.rm.main import main as _main; import sys; sys.exit(_main())' "$0" "$@"

@@ -1,0 +1,9 @@
+[package]
+name = "trash-empty-rs"
+version = "0.1.0"
+authors = ["trash-cli contributors"]
+edition = "2018"
+
+[[bin]]
+name = "trash-empty"
+path = "src/main.rs"

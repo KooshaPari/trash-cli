@@ -17,3 +17,5 @@
 /ssh-config
 /.idea/
 /.tox/
+/trash-put-rs/target/
+/trash-empty-rs/target/

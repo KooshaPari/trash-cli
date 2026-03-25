@@ -1,0 +1,8 @@
+[package]
+name = "trash-list"
+version = "0.24.5.26"
+edition = "2021"
+
+[dependencies]
+chrono = "0.4"
+urlencoding = "2.1"
