@@ -1,7 +1,4 @@
-# API & Interface Contracts
+# Architecture: Contracts
+This directory contains the formal interface definitions (OpenAPI, Protobuf, etc.) for this service.
+All changes to these files must be schema-validated.
 
-Standardized Phenotype enterprise API documentation.
-
-## Artifacts
-- API Schemas: [schemas/](schemas/)
-- Integration Contracts: [contracts/](contracts/)
