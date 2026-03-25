@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 description = "Shared Rust foundation for trash-cli command migration"
 license = "GPL-3.0-or-later"
+exclude = ["PROJECT-wtrees/", ".kittify/", ".github/", "kitty-specs/", "docs/", "tests/", "AGENTS.md", ".claudeignore", ".coderabbit.yaml", ".gemini/", "conftest.py", "*.py", "*.rst", "*.txt", "*.cfg", "*.ini", "Vagrantfile", "trash-*", "trashcli/"]
 
 [dependencies]
 chrono = "0.4"

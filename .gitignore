@@ -19,3 +19,31 @@
 /.tox/
 /trash-put-rs/target/
 /trash-empty-rs/target/
+
+# Added by Spec Kitty CLI (auto-managed)
+.opencode/
+.windsurf/
+.qwen/
+.augment/
+.roo/
+.amazonq/
+.github/copilot/
+.kittify/.dashboard
+
+
+# AI tool artifacts
+.claude/
+.codex/
+.cursor/
+.gemini/
+.kittify/
+.kilocode/
+.github/prompts/
+.github/copilot-instructions.md
+.claudeignore
+.llmignore
+
+# VitePress
+docs/.vitepress/cache
+docs/.vitepress/dist
+node_modules
