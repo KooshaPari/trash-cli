@@ -1,3 +1,93 @@
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = [
+    "hatchling",
+]
+build-backend = "hatchling.build"
+
+[project]
+name = "trash-cli"
+version = "0.25.3.24"
+description = "Command line interface to FreeDesktop.org Trash."
+readme = "README.rst"
+requires-python = ">=3.13"
+authors = [
+    { name = "Andrea Francia", email = "andrea@andreafrancia.it" },
+]
+keywords = [
+    "trash",
+    "freedesktop",
+    "cli",
+    "rm",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
+    "Natural Language :: English",
+    "Operating System :: POSIX",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: System",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "psutil>=6.0.0",
+    "six>=1.16.0",
+]
+
+[project.license]
+text = "GPL v2"
+
+[project.optional-dependencies]
+completion = [
+    "shtab>=1.7.1",
+]
+dev = [
+    "pytest>=9.0.0",
+    "pytest-cov>=7.0.0",
+    "pytest-mock>=3.15.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/andreafrancia/trash-cli"
+Repository = "https://github.com/andreafrancia/trash-cli"
+
+[project.scripts]
+trash = "trashcli.put.main:main"
+trash-put = "trashcli.put.main:main"
+trash-list = "trashcli.list.main:main"
+trash-restore = "trashcli.restore.main:main"
+trash-empty = "trashcli.empty.main:main"
+trash-rm = "trashcli.rm.main:main"
+
+[tool.hatch.build.targets.wheel]
+packages = [
+    "trashcli",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "W",
+]
+ignore = [
+    "E501",
+]
+
+[tool.pytest.ini_options]
+addopts = "--strict-markers -v"
+testpaths = [
+    "tests",
+]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"

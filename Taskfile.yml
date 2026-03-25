@@ -1,0 +1,29 @@
+version: '3'
+
+tasks:
+  lint:
+    desc: "Run all linters (ruff check + format check)"
+    cmds:
+      - ruff check .
+      - ruff format --check .
+
+  format:
+    desc: "Format code with ruff"
+    cmds:
+      - ruff format .
+
+  test:
+    desc: "Run pytest"
+    cmds:
+      - pytest
+
+  quality:
+    desc: "Run full quality checks (lint + test)"
+    cmds:
+      - task: lint
+      - task: test
+
+  sync:
+    desc: "Sync dependencies with uv"
+    cmds:
+      - uv sync
